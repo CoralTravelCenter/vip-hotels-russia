@@ -1,7 +1,7 @@
 <script setup>
 const props = defineProps({
 	data: Array,
-})
+});
 </script>
 <template>
 	<swiper-container
@@ -13,7 +13,7 @@ const props = defineProps({
 		<swiper-slide
 			v-for="slide in data"
 			:style="{
-				background: `url(${slide.img_url}) center/cover no-repeat`,
+				background: `url(${slide.img}) center/cover no-repeat`,
 			}"
 		>
 			<div class="side-pannel">
@@ -26,12 +26,12 @@ const props = defineProps({
 				<div class="side-pannel-content">
 					<div class="side-pannel-content__rating">
 						<img
-							v-for="idx in slide.stars"
+							v-for="idx in slide.rating"
 							:key="idx"
 							src="/site/coral.ru/assets/rating-icon.svg"
 						/>
 					</div>
-					<h3>{{ slide.name }}</h3>
+					<h3>{{ slide.hotel_name }}</h3>
 					<ul class="side-pannel-content__benefits">
 						<li v-for="benefit in slide.benefits">
 							{{ benefit }}
@@ -49,7 +49,7 @@ const props = defineProps({
 </template>
 
 <style lang="scss">
-@import '../../../common/css/coral/coral-fluid-mixins';
+@import "../../../common/css/coral/coral-fluid-mixins";
 
 :root {
 	--swiper-scrollbar-right: 40%;
