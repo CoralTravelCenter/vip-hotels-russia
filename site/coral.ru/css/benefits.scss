@@ -1,0 +1,60 @@
+@import '../../common/css/coral/coral-fluid-mixins';
+
+section.benefits > article .contenu {
+	.benefits-mansory {
+		display: grid;
+		grid-template-columns: 1.5fr 1.2fr 0.3fr 1.2fr;
+		grid-template-rows: 1fr 1fr;
+		gap: 1em;
+		grid-template-areas:
+			'priroda service rest rest'
+			'priroda eda eda villas';
+
+		.benefit {
+			border-radius: 1em;
+			@include property(height, 300px);
+			@include property(padding, 32px);
+
+			h4 {
+				color: #fff;
+			}
+		}
+
+		.priroda {
+			grid-area: priroda;
+			background: url(/site/coral.ru/assets/zima.webp);
+			height: 100%;
+			background-repeat: no-repeat;
+			background-size: cover;
+			background-position: center;
+		}
+		.eda {
+			grid-area: eda;
+			background: url(/site/coral.ru/assets/ikra.webp);
+			background-repeat: no-repeat;
+			background-size: cover;
+			background-position: center;
+		}
+		.villas {
+			grid-area: villas;
+			background: url(/site/coral.ru/assets/villas.webp);
+			background-repeat: no-repeat;
+			background-size: cover;
+			background-position: center;
+		}
+		.rest {
+			grid-area: rest;
+			background: url(/site/coral.ru/assets/plyaj.webp);
+			background-repeat: no-repeat;
+			background-size: cover;
+			background-position: center;
+		}
+		.service {
+			grid-area: service;
+			background: url(/site/coral.ru/assets/gilrs.webp);
+			background-repeat: no-repeat;
+			background-size: cover;
+			background-position: center;
+		}
+	}
+}

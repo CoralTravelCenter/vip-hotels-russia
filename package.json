@@ -1,0 +1,19 @@
+{
+	"dependencies": {
+		"vue": "^3.4.38",
+		"vue-yandex-maps": "^2.1.4"
+	},
+	"alias": {
+		"vue": {
+			"global": "Vue"
+		}
+	},
+	"devDependencies": {
+		"@parcel/transformer-sass": "^2.12.0",
+		"@parcel/transformer-vue": "^2.8.2",
+		"process": "^0.11.10"
+	},
+	"scripts": {
+		"proxy": "lcp --proxyUrl https://www.coral.ru"
+	}
+}
