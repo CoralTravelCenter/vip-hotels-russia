@@ -34,7 +34,7 @@ function handleTabClick(idx) {
 		<ul class="vue-hotel-tabs">
 			<li v-for="(el, idx) in tabs" :key="idx" @click="handleTabClick(idx)">
 				<button>
-					{{ el.region }}
+					{{ el }}
 				</button>
 			</li>
 		</ul>
@@ -45,7 +45,7 @@ function handleTabClick(idx) {
 				transform: setGliderPosition(),
 				width: `${getGliderWidth}%`,
 			}"
-			>{{ tabs[activeTabIndex].region }}</span
+			>{{ tabs[activeTabIndex] }}</span
 		>
 	</div>
 </template>
@@ -53,8 +53,7 @@ function handleTabClick(idx) {
 <style scoped>
 .tabs-wrapper {
 	position: relative;
-	margin-top: calc(48px - 20px);
-	margin-bottom: 48px;
+	margin-bottom: 40px;
 }
 
 ul {

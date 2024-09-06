@@ -1,7 +1,7 @@
 <script setup>
 const props = defineProps({
 	data: Array,
-});
+})
 </script>
 <template>
 	<swiper-container
@@ -19,7 +19,7 @@ const props = defineProps({
 			<div class="side-pannel">
 				<span class="side-pannel__location">
 					<div class="icon">
-						<img src="/site/coral.ru/assets/location-icon.svg"/>
+						<img src="/site/coral.ru/assets/location-icon.svg" />
 					</div>
 					{{ slide.location }}
 				</span>
@@ -40,7 +40,7 @@ const props = defineProps({
 					<span data-price>от XXX XXX ₽</span>
 					<div class="actions">
 						<a href="#">Забронировать онлайн</a>
-						<a href="#" class="outline">Подробнее об отеле</a>
+						<!-- <a href="#" class="outline">Подробнее об отеле</a> -->
 					</div>
 				</div>
 			</div>
@@ -49,7 +49,7 @@ const props = defineProps({
 </template>
 
 <style lang="scss">
-@import "../../../common/css/coral/coral-fluid-mixins";
+@import '../../../common/css/coral/coral-fluid-mixins';
 
 :root {
 	--swiper-scrollbar-right: 40%;
@@ -76,9 +76,9 @@ swiper-slide {
 	display: flex;
 	flex-direction: column;
 	background: linear-gradient(
-			180deg,
-			rgba(31, 31, 31, 0.44) 0.03%,
-			rgba(0, 0, 0, 0.4) 105.62%
+		180deg,
+		rgba(31, 31, 31, 0.44) 0.03%,
+		rgba(0, 0, 0, 0.4) 105.62%
 	);
 	backdrop-filter: blur(15px);
 	border-top-right-radius: 1em;

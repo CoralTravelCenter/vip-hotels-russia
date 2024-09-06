@@ -1,5 +1,5 @@
-@import "../../common/css/coral/coral-fluid-mixins";
-@import "../../common/css/global-variables";
+@import '../../common/css/coral/coral-fluid-mixins';
+@import '../../common/css/global-variables';
 
 .row-outer-container:has(section.hero) {
 	background: #f1f7fb !important;
@@ -101,4 +101,8 @@ section.kv > article .contenu {
 			z-index: 2;
 		}
 	}
+}
+
+#app {
+	padding-top: 40px;
 }
