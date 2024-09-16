@@ -1,7 +1,7 @@
-@use "sass:math";
-@import "../../common/css/global-variables";
-@import "../../common/css/_regular-mixins.scss";
-@import "../../common/css/coral/_coral-fluid-mixins.scss";
+@use 'sass:math';
+@import '../../common/css/global-variables';
+@import '../../common/css/_regular-mixins.scss';
+@import '../../common/css/coral/_coral-fluid-mixins.scss';
 
 section.phones-block > article .contenu .content {
 	width: 100%;
@@ -21,11 +21,12 @@ section.phones-block > article .contenu .block {
 	@include property(padding, 20px);
 
 	display: grid;
-	grid-template-columns: max-content max-content 211px max-content;
+	grid-template-columns: max-content max-content auto max-content;
 	align-content: start;
 
 	p {
 		@include font(12px);
+		max-width: 211px;
 		@media (max-width: $mobile-breakpoint) {
 			grid-row: 2/3;
 			grid-column: 2/3;

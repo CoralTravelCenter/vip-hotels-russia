@@ -3,39 +3,42 @@ import {
 	HOTEL_INFO_API,
 	HOTEL_PRICE_API,
 	doRequestToServer,
-} from "./api.js";
-import { addDays, formatDate } from "./date.js";
+} from './api.js'
+import { addDays, formatDate } from './date.js'
 
-const today = new Date();
+const today = new Date()
 const beginSearchDate = formatDate(
-	addDays(today, data_onlyhotel_lookup_depth_days),
-);
+	addDays(today, data_onlyhotel_lookup_depth_days)
+)
 const searchDepthDate = formatDate(
-	addDays(beginSearchDate, data_onlyhotel_lookup_nights),
-);
+	addDays(beginSearchDate, data_onlyhotel_lookup_nights)
+)
 
 function endpointUrl(endpoint) {
 	const host =
-		location.hostname === "localhost"
-			? "http://localhost:8010/proxy"
-			: "//" + location.hostname.replace(/www|new/, "b2capi");
-	return host + endpoint;
+		location.hostname === 'localhost'
+			? 'http://localhost:8010/proxy'
+			: '//' + location.hostname.replace(/www|new/, 'b2capi')
+	return host + endpoint
 }
 
 // #1 Получаем ID отелей //
-export const getArrivalLocation = vip_russia_hotels.map((hotel) => {
-	return doRequestToServer(endpointUrl(ARRIVAL_LOCATIONS_API), {
-		text: hotel.data_onlyhotel_lookup_regions,
-	});
-});
+export const getArrivalLocation = activeRegion => {
+	const hotels = Object.values(window.vip_russia_hotels[activeRegion])
+	return hotels[0].map(hotel => {
+		return doRequestToServer(endpointUrl(ARRIVAL_LOCATIONS_API), {
+			text: hotel.hotel_name,
+		})
+	})
+}
 
 // #2 Получаем координаты и изображения отелей //
-export const getHotelInfo = (id) => {
+export const getHotelInfo = id => {
 	return doRequestToServer(endpointUrl(HOTEL_INFO_API), {
 		hotelIds: [id],
-		imageSizes: [7],
-	});
-};
+		imageSizes: [1],
+	})
+}
 
 // #3 Получаем стоимость номера //
 export const getHotelPrice = (idToString, type, name, friendlyUrl) => {
@@ -48,6 +51,7 @@ export const getHotelPrice = (idToString, type, name, friendlyUrl) => {
 					value: data_onlyhotel_lookup_nights,
 				},
 			],
+			imageSizes: [8],
 			roomCriterias: [
 				{
 					passengers: [
@@ -76,5 +80,5 @@ export const getHotelPrice = (idToString, type, name, friendlyUrl) => {
 				sortType: 0,
 			},
 		},
-	});
-};
+	})
+}

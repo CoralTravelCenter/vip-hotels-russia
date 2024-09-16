@@ -1,14 +1,52 @@
 <script setup>
+import { onMounted, ref } from 'vue'
 const props = defineProps({
-	data: Array,
-});
+	activeTabIndex: {
+		type: Number,
+		required: true,
+	},
+	data: {
+		type: Array,
+		required: true,
+	},
+	clickedHotel: {
+		type: Number,
+		required: true,
+	},
+})
+
+const SWIPER_SLIDER = ref(null)
+
+const hotelsBenefits = Object.values(
+	window.vip_russia_hotels[props.activeTabIndex]
+)[0]
+
+const x_Links = {
+	data_onlyhotel_lookup_depth_days: window.data_onlyhotel_lookup_depth_days,
+	data_onlyhotel_lookup_nights: window.data_onlyhotel_lookup_nights,
+	data_onlyhotel_lookup_destination: window.data_onlyhotel_lookup_destination,
+}
+
+function priceCalculation(price) {
+	return Math.floor(price / 7 / 2)
+}
+
+onMounted(() => {
+	SWIPER_SLIDER.value.on('initialize', function () {
+		console.log('slider ignited')
+	})
+	SWIPER_SLIDER.value.initialize()
+})
 </script>
 <template>
 	<swiper-container
+		ref="SWIPER_SLIDER"
 		slides-per-view="1"
 		direction="vertical"
-		scrollbar-hide="false"
+		scrollbarHide="false"
 		grabCursor="true"
+		scrollbar="true"
+		init="false,"
 	>
 		<swiper-slide
 			v-for="slide in data"
@@ -21,7 +59,7 @@ const props = defineProps({
 					<div class="icon">
 						<img src="/site/coral.ru/assets/location-icon.svg" />
 					</div>
-					{{ slide.location }}
+					{{ slide.location_name }}
 				</span>
 				<div class="side-pannel-content">
 					<div class="side-pannel-content__rating">
@@ -33,13 +71,33 @@ const props = defineProps({
 					</div>
 					<h3>{{ slide.hotel_name }}</h3>
 					<ul class="side-pannel-content__benefits">
-						<li v-for="benefit in slide.benefits">
+						<li v-for="benefit in hotelsBenefits[activeTabIndex].benefits">
 							{{ benefit }}
 						</li>
 					</ul>
-					<span data-price>от XXX XXX ₽</span>
+					<div data-price>
+						<span class="price">от {{ priceCalculation(slide.price) }} ₽</span
+						><br />
+						<span class="attention"
+							>* Цена указана из расчета прибывания не менее 7 ночей, за одного
+							туриста</span
+						>
+					</div>
 					<div class="actions">
-						<a href="#">Забронировать онлайн</a>
+						<a
+							href="#"
+							:data-onlyhotel-lookup-regions="slide.hotel_name"
+							:data_onlyhotel_lookup_depth_days="
+								x_Links.data_onlyhotel_lookup_depth_days
+							"
+							:data_onlyhotel_lookup_nights="
+								x_Links.data_onlyhotel_lookup_nights
+							"
+							:data_onlyhotel_lookup_destination="
+								x_Links.data_onlyhotel_lookup_destination
+							"
+							>Забронировать онлайн</a
+						>
 						<!-- <a href="#" class="outline">Подробнее об отеле</a> -->
 					</div>
 				</div>
@@ -49,7 +107,7 @@ const props = defineProps({
 </template>
 
 <style lang="scss">
-@import "../../../common/css/coral/coral-fluid-mixins";
+@import '../../../common/css/coral/coral-fluid-mixins';
 
 :root {
 	--swiper-scrollbar-right: 40%;
@@ -73,8 +131,8 @@ swiper-slide {
 	@include property(padding, 30px);
 	width: 40%;
 	color: #fff;
-	display: flex;
-	flex-direction: column;
+	display: grid;
+	grid-template-rows: max-content auto;
 	background: linear-gradient(
 		180deg,
 		rgba(31, 31, 31, 0.44) 0.03%,
@@ -104,6 +162,7 @@ swiper-slide {
 	.side-pannel-content {
 		display: flex;
 		flex-direction: column;
+		align-self: center;
 		@include property(padding, 26px);
 
 		&__rating {
@@ -126,7 +185,16 @@ swiper-slide {
 		}
 
 		[data-price] {
-			@include fontAndProperty(32px, margin-bottom, 48px);
+			@include property(margin-bottom, 48px);
+
+			.price {
+				@include font(32px);
+			}
+
+			.attention {
+				font-size: 8px;
+				line-height: 1;
+			}
 		}
 
 		.actions {

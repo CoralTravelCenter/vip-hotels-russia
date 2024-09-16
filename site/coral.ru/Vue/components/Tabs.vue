@@ -1,40 +1,39 @@
 <script setup>
-import { computed } from "vue";
+import { computed } from 'vue'
 
 const props = defineProps({
 	tabs: {
 		type: Array,
 		required: true,
 	},
-});
+})
 
-const activeTabIndex = defineModel({ default: 0 });
+const activeTabIndex = defineModel({ default: 0 })
 
 const getGliderWidth = computed(() => {
-	return Math.round(100 / props.tabs.length);
-});
+	return Math.round(100 / props.tabs.length)
+})
 
 function setGliderPosition() {
-	if (activeTab.value === 0) {
-		return `translate(8px, -50%)`;
-	} else if (activeTab.value === props.tabs.length) {
-		return `translate(${tabs.length}00%, -50%)`;
+	if (activeTabIndex.value === 0) {
+		return `translate(8px, -50%)`
+	} else if (activeTabIndex.value === props.tabs.length) {
+		return `translate(${props.tabs.length}00%, -50%)`
 	} else {
-		return `translate(calc(${activeTab.value}00% + 5px), -50%)`;
+		return `translate(calc(${activeTabIndex.value}00% + 5px), -50%)`
 	}
 }
 
 function handleTabClick(idx) {
-	activeTabIndex.value = idx;
+	activeTabIndex.value = idx
 }
 </script>
 
 <template>
-	<div>{{ tabs }}</div>
-	<!-- <div class="tabs-wrapper">
+	<div class="tabs-wrapper">
 		<ul class="vue-hotel-tabs">
 			<li
-				v-for="(el, idx) in tabs"
+				v-for="(el, idx) in props.tabs"
 				:key="idx"
 				@click="handleTabClick(idx)"
 			>
@@ -44,19 +43,18 @@ function handleTabClick(idx) {
 			</li>
 		</ul>
 		<span
-			ref="tabsGlider"
 			class="tabs-glider"
 			:style="{
 				transform: setGliderPosition(),
 				width: `calc(${getGliderWidth}% - 8px)`,
 			}"
-			>{{ el }}</span
+			>{{ props.tabs[activeTabIndex] }}</span
 		>
-	</div> -->
+	</div>
 </template>
 
 <style lang="scss" scoped>
-@import "../../../common/css/coral/coral-fluid-mixins";
+@import '../../../common/css/coral/coral-fluid-mixins';
 
 .tabs-wrapper {
 	position: relative;

@@ -17,13 +17,6 @@ section.kv > article .contenu {
 			aspect-ratio: 343/520;
 		}
 
-		/* Эти стили при необходимости корректировки размеров Iframe */
-		/* .vimeo-video-box iframe {
-			width: 103%;
-			transform: translateX(-50%);
-			left: 50%;
-		} */
-
 		.content {
 			--content-font-color: #ffffff;
 
@@ -72,10 +65,10 @@ section.kv > article .contenu {
 			h2 {
 				@include fontAndProperty(56px, margin-bottom, 24px);
 				font-weight: 400;
-				/* @media (max-width: 768px) {
+				@media (max-width: 768px) {
 					margin-top: 0;
 					@include font(32px);
-				} */
+				}
 			}
 
 			p {

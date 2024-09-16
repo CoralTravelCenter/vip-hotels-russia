@@ -1,68 +1,88 @@
 <script setup>
-import { onMounted, ref } from "vue";
-import Tabs from "./components/Tabs.vue";
-import Slider from "./components/Slider.vue";
-import { getArrivalLocation, getHotelInfo, getHotelPrice } from "./fetch";
-import { removeDuplicateObjects } from "../../common/js/utils";
+import { computed, onMounted, ref, watch } from 'vue'
+import Map from './components/Map.vue'
+import Slider from './components/Slider.vue'
+import Tabs from './components/Tabs.vue'
+import { getArrivalLocation, getHotelInfo, getHotelPrice } from './fetch.js'
 
-const activeTabIndex = ref(0);
-const tabsIsLoading = ref(true);
-let tabsArray = ref(null);
-const parentRegionArr = [];
+const activeTabIndex = ref(0)
+const clickedOnMapHotel = ref(0)
+const regionsTabs = computed(() => {
+	return window.vip_russia_hotels.map(tab => Object.keys(tab)[0])
+})
 
-function responceAction(response) {
-	const { id, type, name, friendlyUrl } = response.result.locations[0];
-	const idToString = id.split("-")[0].toString();
+const sliderData = ref([])
+const currentMapCoordinates = ref([])
+const isLoading = ref({ slider: true, map: true })
 
-	getHotelInfo(idToString).then((response) => {
-		const parentRegion = response.result.areas;
-		parentRegionArr.push(parentRegion);
-		tabsArray.value = removeDuplicateObjects(parentRegionArr);
-		tabsIsLoading.value = false;
-	});
-	// getHotelPrice(idToString, type, name, friendlyUrl).then(
-	// 	(response) => {
-	// 		sliderData.value.push({
-	// 			[PARENT_REGION_ID]: {
-	// 				price: response.result.products[0].offers[0].price
-	// 					.amount,
-	// 				hotel_name: response.result.products[0].hotel.name,
-	// 				location_name:
-	// 					response.result.products[0].hotel
-	// 						.locationSummary,
-	// 				img: response.result.products[0].hotel.images[0]
-	// 					.sizes[0].url,
-	// 				rating: response.result.hotelCategories["1"]
-	// 					.starCount,
-	// 			},
-	// 		});
-	// 		isLoading.value = false;
-	// 		console.log(sliderData.value);
-	// 	},
-	// );
+function fetchHotelData(response) {
+	const { id, type, name, friendlyUrl } = response.result.locations[0]
+	const idToString = id.split('-')[0].toString()
+
+	Promise.all([
+		getHotelInfo(idToString),
+		getHotelPrice(idToString, type, name, friendlyUrl),
+	]).then(([infoResponse, priceResponse]) => {
+		const hotelInfo = infoResponse.result.hotels[0]
+		const hotelPrice = priceResponse.result.products[0]
+
+		currentMapCoordinates.value.push({
+			lat: hotelInfo.coordinates.latitude,
+			long: hotelInfo.coordinates.longitude,
+			marker_img: hotelInfo.images[0].sizes[0].url,
+		})
+
+		sliderData.value.push({
+			price: hotelPrice.offers[0].price.amount,
+			hotel_name: hotelPrice.hotel.name,
+			location_name: hotelPrice.hotel.locationSummary
+				.split(',')
+				.splice(1, 2)
+				.join(','),
+			img: hotelPrice.hotel.images[0].sizes[0].url,
+			rating: priceResponse.result.hotelCategories['1'].starCount,
+		})
+
+		isLoading.value = { ...isLoading.value, slider: false, map: false }
+	})
 }
 
-onMounted(() => {
-	//Дожидаемся получения ID и запрашиваем остальные данные //
-	Promise.all(getArrivalLocation).then((responses) => {
-		responses.forEach((response) => responceAction(response));
-	});
-});
+async function fetchServerData() {
+	sliderData.value = []
+	currentMapCoordinates.value = []
+	sliderData.value.length === 0
+		? (isLoading.value = { ...isLoading.value, slider: true })
+		: (isLoading.value = { ...isLoading.value, slider: false })
+	const responses = await Promise.all(getArrivalLocation(activeTabIndex.value))
+	responses.forEach(response => fetchHotelData(response))
+}
+
+onMounted(fetchServerData)
+watch(activeTabIndex, fetchServerData)
 </script>
 
 <template>
 	<div class="tabs-wrapper">
-		<Skeletor v-if="tabsIsLoading" width="100%" height="3.5em" as="div" />
-		<Tabs v-else v-model="activeTabIndex" :tabs="tabsArray" />
+		<Tabs v-model="activeTabIndex" :tabs="regionsTabs" />
 	</div>
 
-	<!-- <div class="slider-wrapper">
-		<Skeletor v-if="isLoading" width="100%" height="40em" as="div" />
-		<Slider :data="sliderData[activeTabIndex" />
-	</div> -->
+	<div class="slider-wrapper">
+		<Skeletor v-if="isLoading.slider" width="100%" height="40em" as="div" />
+		<Slider
+			v-else
+			:activeTabIndex="activeTabIndex"
+			:data="sliderData"
+			:clickedHotel="clickedOnMapHotel"
+		/>
+	</div>
 
-	<!-- <Skeletor v-if="isLoading" width="100%" height="32.5em" as="div" />
-	<Map /> -->
+	<Skeletor v-if="isLoading.map" width="100%" height="32.5em" as="div" />
+	<Map
+		v-else
+		:activeTabIndex="activeTabIndex"
+		:coordinates="currentMapCoordinates"
+		v-model="clickedOnMapHotel"
+	/>
 </template>
 
 <style lang="scss" scoped>

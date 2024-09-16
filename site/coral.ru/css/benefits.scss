@@ -10,10 +10,19 @@ section.benefits > article .contenu {
 			'priroda service rest rest'
 			'priroda eda eda villas';
 
+		@media (max-width: 768px) {
+			display: flex;
+			flex-direction: column;
+		}
+
 		.benefit {
 			border-radius: 1em;
 			@include property(height, 300px);
 			@include property(padding, 32px);
+
+			@media (max-width: 768px) {
+				height: 220px !important;
+			}
 
 			h4 {
 				color: #fff;
