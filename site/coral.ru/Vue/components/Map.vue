@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from "vue";
 import {
 	YandexMap,
 	YandexMapControls,
@@ -7,9 +7,11 @@ import {
 	YandexMapDefaultSchemeLayer,
 	YandexMapMarker,
 	YandexMapZoomControl,
-} from 'vue-yandex-maps'
+	YandexMapClusterer,
+} from "vue-yandex-maps";
+import CoralMarker from "./CoralMarker.vue";
 
-const regionsCoordinates = window.regionsCoordinates
+const regionsCoordinates = window.regionsCoordinates;
 
 const props = defineProps({
 	activeTabIndex: {
@@ -20,34 +22,43 @@ const props = defineProps({
 		type: Array,
 		required: true,
 	},
-})
+	data: {
+		type: Array,
+		required: true,
+	},
+});
 
-const clickedOnMapHotel = defineModel({ default: 0 })
+const clickedOnMapHotel = defineModel({ default: 0 });
 
 const setCenter = computed(() => {
-	const [lat, long] = regionsCoordinates[props.activeTabIndex].split(',')
-	return [long, lat]
-})
+	const [lat, long] = regionsCoordinates[props.activeTabIndex].split(",");
+	return [long, lat];
+});
+
+const clusterer = ref(null);
+const clustererGridSize = ref(90);
+
+const setMapSettings = ref({
+	location: {
+		center: setCenter.value,
+		zoom: 7,
+	},
+	showScaleInCopyrights: true,
+});
 
 function onMarkerClick(idx) {
-	clickedOnMapHotel.value = idx
+	setMapSettings.value.location.center = [
+		props.coordinates[idx].long,
+		props.coordinates[idx].lat,
+	];
+	setMapSettings.value.location.zoom = 15;
+	clickedOnMapHotel.value = idx;
 }
 </script>
 
 <template>
 	<div class="map-wrapper">
-		<yandex-map
-			height="32.5em"
-			:settings="{
-				location: {
-					center: setCenter,
-					zoom: 7,
-				},
-				showScaleInCopyrights: true,
-				theme,
-			}"
-			width="100%"
-		>
+		<yandex-map height="32.5em" :settings="setMapSettings" width="100%">
 			<yandex-map-default-scheme-layer />
 			<yandex-map-default-features-layer />
 
@@ -55,18 +66,30 @@ function onMarkerClick(idx) {
 				<yandex-map-zoom-control />
 			</yandex-map-controls>
 
-			<yandex-map-marker
-				v-for="(marker, idx) in coordinates"
-				:key="idx"
-				position="top-center left-center"
-				:settings="{
-					coordinates: [marker.long, marker.lat],
-					title: 'Marker with slot',
-					subtitle: 'Marker with slot description',
-				}"
+			<yandex-map-clusterer
+				v-model="clusterer"
+				:grid-size="clustererGridSize"
+				zoom-on-cluster-click
 			>
-				<div class="pin" @click="onMarkerClick(idx)" />
-			</yandex-map-marker>
+				<template #cluster="{ length, clusterer }">
+					<div class="cluster">
+						<div class="hud">{{ length }}</div>
+					</div>
+				</template>
+				<yandex-map-marker
+					v-for="(marker, idx) in coordinates"
+					:key="idx"
+					position="top-center left-center"
+					:settings="{
+						coordinates: [marker.long, marker.lat],
+					}"
+				>
+					<CoralMarker
+						@click="onMarkerClick(idx)"
+						:data="data[idx]"
+					/>
+				</yandex-map-marker>
+			</yandex-map-clusterer>
 		</yandex-map>
 	</div>
 </template>
@@ -80,18 +103,27 @@ function onMarkerClick(idx) {
 		border-radius: 20px;
 		overflow: hidden;
 
-		.pin {
-			cursor: pointer;
-			max-width: unset;
-			width: 50px;
-			height: 50px;
-			border: 8px solid #0092d0;
+		.cluster {
+			width: 3em;
+			height: 3em;
 			border-radius: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background-color: rgba(0, 0, 0, 0.15);
+			cursor: pointer;
 
-			background-repeat: no-repeat;
-			background-position: center;
-			background-size: cover;
-			background-image: url("data:image/svg+xml,%3Csvg width='472' height='472' viewBox='0 0 472 472' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%230077b1' d='M68.83 402.343C112.203 445.714 171.345 472 235.745 472s124.857-26.286 166.914-69.657z'/%3E%3Cpath fill='%2378abdc' d='M8.374 298.515c10.514 39.428 31.542 74.914 60.457 103.828h335.14c27.6-28.914 48.63-64.4 60.458-103.828z'/%3E%3Cpath fill='%23e84e0f' d='M.488 235.43c0 21.028 2.629 42.057 7.886 61.77h454.74c5.257-19.713 7.886-40.742 7.886-61.77 0-11.829-1.314-22.343-2.629-34.172H3.117C1.802 213.087.488 224.915.488 235.43'/%3E%3Cpath fill='%23fab60d' d='M28.088 123.716c-13.143 23.657-21.029 49.943-26.286 77.542h466.57c-3.943-27.6-13.143-53.885-26.286-77.542z'/%3E%3Cpath fill='%23ee762d' d='M396.086 61.945C354.03 23.83 298.83.174 237.058.174S118.773 23.83 76.716 61.944z'/%3E%3Cpath fill='%23fdce86' d='M28.088 123.716H443.4c-13.143-23.657-28.914-44.686-48.628-61.771H76.716c-19.714 18.4-35.485 39.428-48.628 61.771'/%3E%3C/svg%3E");
+			.hud {
+				width: 2em;
+				height: 2em;
+				background: #fff;
+				font-weight: 600;
+				font-size: 1.1em;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border-radius: 100%;
+			}
 		}
 	}
 }

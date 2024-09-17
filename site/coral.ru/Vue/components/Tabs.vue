@@ -1,31 +1,15 @@
 <script setup>
-import { computed } from 'vue'
-
 const props = defineProps({
 	tabs: {
 		type: Array,
 		required: true,
 	},
-})
+});
 
-const activeTabIndex = defineModel({ default: 0 })
-
-const getGliderWidth = computed(() => {
-	return Math.round(100 / props.tabs.length)
-})
-
-function setGliderPosition() {
-	if (activeTabIndex.value === 0) {
-		return `translate(8px, -50%)`
-	} else if (activeTabIndex.value === props.tabs.length) {
-		return `translate(${props.tabs.length}00%, -50%)`
-	} else {
-		return `translate(calc(${activeTabIndex.value}00% + 5px), -50%)`
-	}
-}
+const activeTabIndex = defineModel({ default: 0 });
 
 function handleTabClick(idx) {
-	activeTabIndex.value = idx
+	activeTabIndex.value = idx;
 }
 </script>
 
@@ -35,6 +19,7 @@ function handleTabClick(idx) {
 			<li
 				v-for="(el, idx) in props.tabs"
 				:key="idx"
+				:class="{ js_active: idx === activeTabIndex }"
 				@click="handleTabClick(idx)"
 			>
 				<button>
@@ -42,19 +27,11 @@ function handleTabClick(idx) {
 				</button>
 			</li>
 		</ul>
-		<span
-			class="tabs-glider"
-			:style="{
-				transform: setGliderPosition(),
-				width: `calc(${getGliderWidth}% - 8px)`,
-			}"
-			>{{ props.tabs[activeTabIndex] }}</span
-		>
 	</div>
 </template>
 
 <style lang="scss" scoped>
-@import '../../../common/css/coral/coral-fluid-mixins';
+@import "../../../common/css/coral/coral-fluid-mixins";
 
 .tabs-wrapper {
 	position: relative;
@@ -71,11 +48,37 @@ ul {
 	overflow: hidden;
 	padding: 8px !important;
 	background: #fff;
+
+	@media (max-width: 768px) {
+		overflow-x: scroll;
+		scroll-snap-type: x mandatory;
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+
+		&::-webkit-scrollbar {
+			display: none;
+		}
+	}
 }
 
 li {
-	flex: 1;
 	font-family: inherit;
+	flex-grow: 1;
+	@media (max-width: 768px) {
+		flex-shrink: 0;
+		scroll-snap-align: start;
+	}
+}
+
+li.js_active {
+	button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #fff;
+		background: rgba(0, 146, 208, 1);
+		transition: all 300ms ease;
+	}
 }
 
 button {
@@ -86,25 +89,10 @@ button {
 	border: none;
 	color: #000;
 	width: 100%;
-
+	border-radius: 8px;
 	font-style: normal;
 	font-weight: 400;
 	line-height: 1.3;
 	cursor: pointer;
-}
-
-.tabs-glider {
-	@include fontAndProperty(12px, padding-block, 12px);
-	@include fontAndProperty(12px, padding-inline, 20px);
-	position: absolute;
-	border-radius: 8px;
-	top: 50%;
-	left: 0;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	color: #fff;
-	background: rgba(0, 146, 208, 1);
-	transition: transform 300ms ease;
 }
 </style>

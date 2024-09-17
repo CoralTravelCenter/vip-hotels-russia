@@ -1,5 +1,6 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
+
 const props = defineProps({
 	activeTabIndex: {
 		type: Number,
@@ -17,9 +18,9 @@ const props = defineProps({
 
 const SWIPER_SLIDER = ref(null)
 
-const hotelsBenefits = Object.values(
+const hotelsBenefits = (hotelsBenefits = Object.values(
 	window.vip_russia_hotels[props.activeTabIndex]
-)[0]
+)[0])
 
 const x_Links = {
 	data_onlyhotel_lookup_depth_days: window.data_onlyhotel_lookup_depth_days,
@@ -31,23 +32,33 @@ function priceCalculation(price) {
 	return Math.floor(price / 7 / 2)
 }
 
-onMounted(() => {
-	SWIPER_SLIDER.value.on('initialize', function () {
-		console.log('slider ignited')
+const swiperParams = {
+	slidesPerView: 1,
+	grabCursor: true,
+	scrollbar: true,
+	pagination: true,
+	breakpoints: {
+		768: {
+			direction: 'vertical',
+			pagination: false,
+		},
+	},
+}
+
+watch(props.clickedHotel, props.activeTabIndex, () => {
+	SWIPER_SLIDER.value.on('init', swiper => {
+		console.log(swiper)
+		swiper.slideTo(swiper.slides[props.activeTabIndex], 300)
 	})
+})
+
+onMounted(() => {
+	Object.assign(SWIPER_SLIDER.value, swiperParams)
 	SWIPER_SLIDER.value.initialize()
 })
 </script>
 <template>
-	<swiper-container
-		ref="SWIPER_SLIDER"
-		slides-per-view="1"
-		direction="vertical"
-		scrollbarHide="false"
-		grabCursor="true"
-		scrollbar="true"
-		init="false,"
-	>
+	<swiper-container ref="SWIPER_SLIDER" init="false">
 		<swiper-slide
 			v-for="slide in data"
 			:style="{
@@ -71,7 +82,7 @@ onMounted(() => {
 					</div>
 					<h3>{{ slide.hotel_name }}</h3>
 					<ul class="side-pannel-content__benefits">
-						<li v-for="benefit in hotelsBenefits[activeTabIndex].benefits">
+						<li v-for="benefit in hotelsBenefits[activeTabIndex]?.benefits">
 							{{ benefit }}
 						</li>
 					</ul>
@@ -119,6 +130,10 @@ onMounted(() => {
 swiper-container {
 	@include property(height, 630px);
 	border-radius: 1em;
+
+	@media (max-width: 768px) {
+		@include property(height, 800px);
+	}
 }
 
 swiper-slide {
@@ -142,6 +157,14 @@ swiper-slide {
 	border-top-right-radius: 1em;
 	border-bottom-right-radius: 1em;
 
+	@media (max-width: 768px) {
+		border-top-right-radius: 1em;
+		border-top-left-radius: 1em;
+		border-bottom-right-radius: 0;
+		padding: 1em;
+		height: 31em;
+	}
+
 	&__location {
 		@include font(20px);
 		display: inline-flex;
@@ -157,6 +180,12 @@ swiper-slide {
 				object-fit: contain;
 			}
 		}
+
+		@media (max-width: 768px) {
+			@include font(16px);
+			margin-left: 0;
+			margin-right: auto;
+		}
 	}
 
 	.side-pannel-content {
@@ -164,6 +193,10 @@ swiper-slide {
 		flex-direction: column;
 		align-self: center;
 		@include property(padding, 26px);
+
+		@media (max-width: 768px) {
+			padding: 0;
+		}
 
 		&__rating {
 			width: 1em;
@@ -208,6 +241,14 @@ swiper-slide {
 				color: #fff;
 			}
 		}
+	}
+
+	@media (max-width: 768px) {
+		width: 100%;
+	}
+
+	.swiper-pagination-bullet-active {
+		background: #0092d0;
 	}
 }
 </style>
