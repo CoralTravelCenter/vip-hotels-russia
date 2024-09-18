@@ -1,42 +1,38 @@
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref } from 'vue'
 import {
 	YandexMap,
+	YandexMapClusterer,
 	YandexMapControls,
 	YandexMapDefaultFeaturesLayer,
 	YandexMapDefaultSchemeLayer,
 	YandexMapMarker,
 	YandexMapZoomControl,
-	YandexMapClusterer,
-} from "vue-yandex-maps";
-import CoralMarker from "./CoralMarker.vue";
+} from 'vue-yandex-maps'
+import CoralMarker from './CoralMarker.vue'
 
-const regionsCoordinates = window.regionsCoordinates;
+const regionsCoordinates = window.regionsCoordinates
 
 const props = defineProps({
 	activeTabIndex: {
 		type: Number,
 		required: true,
 	},
-	coordinates: {
-		type: Array,
-		required: true,
-	},
 	data: {
 		type: Array,
 		required: true,
 	},
-});
+})
 
-const clickedOnMapHotel = defineModel({ default: 0 });
+const clickedOnMapHotel = defineModel({ default: 0 })
 
 const setCenter = computed(() => {
-	const [lat, long] = regionsCoordinates[props.activeTabIndex].split(",");
-	return [long, lat];
-});
+	const [lat, long] = regionsCoordinates[props.activeTabIndex].split(',')
+	return [long, lat]
+})
 
-const clusterer = ref(null);
-const clustererGridSize = ref(90);
+const clusterer = ref(null)
+const clustererGridSize = ref(90)
 
 const setMapSettings = ref({
 	location: {
@@ -44,15 +40,15 @@ const setMapSettings = ref({
 		zoom: 7,
 	},
 	showScaleInCopyrights: true,
-});
+})
 
 function onMarkerClick(idx) {
 	setMapSettings.value.location.center = [
-		props.coordinates[idx].long,
-		props.coordinates[idx].lat,
-	];
-	setMapSettings.value.location.zoom = 15;
-	clickedOnMapHotel.value = idx;
+		props.data[idx].long,
+		props.data[idx].lat,
+	]
+	setMapSettings.value.location.zoom = 15
+	clickedOnMapHotel.value = idx
 }
 </script>
 
@@ -77,17 +73,14 @@ function onMarkerClick(idx) {
 					</div>
 				</template>
 				<yandex-map-marker
-					v-for="(marker, idx) in coordinates"
+					v-for="(marker, idx) in data"
 					:key="idx"
 					position="top-center left-center"
 					:settings="{
 						coordinates: [marker.long, marker.lat],
 					}"
 				>
-					<CoralMarker
-						@click="onMarkerClick(idx)"
-						:data="data[idx]"
-					/>
+					<CoralMarker @click="onMarkerClick(idx)" :data="data[idx]" />
 				</yandex-map-marker>
 			</yandex-map-clusterer>
 		</yandex-map>

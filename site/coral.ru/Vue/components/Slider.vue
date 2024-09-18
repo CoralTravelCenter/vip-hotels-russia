@@ -1,38 +1,24 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue'
+import { inject, onMounted, ref, watch } from 'vue'
 
 const props = defineProps({
-	activeTabIndex: {
-		type: Number,
-		required: true,
-	},
 	data: {
 		type: Array,
-		required: true,
-	},
-	clickedHotel: {
-		type: Number,
 		required: true,
 	},
 })
 
 const SWIPER_SLIDER = ref(null)
-
-const hotelsBenefits = (hotelsBenefits = Object.values(
-	window.vip_russia_hotels[props.activeTabIndex]
-)[0])
-
+const clickedHotel = inject('clickedHotel')
+const activeTabIndex = inject('activeTabIndex')
 const x_Links = {
 	data_onlyhotel_lookup_depth_days: window.data_onlyhotel_lookup_depth_days,
 	data_onlyhotel_lookup_nights: window.data_onlyhotel_lookup_nights,
 	data_onlyhotel_lookup_destination: window.data_onlyhotel_lookup_destination,
 }
 
-function priceCalculation(price) {
-	return Math.floor(price / 7 / 2)
-}
-
 const swiperParams = {
+	init: false,
 	slidesPerView: 1,
 	grabCursor: true,
 	scrollbar: true,
@@ -45,22 +31,28 @@ const swiperParams = {
 	},
 }
 
-watch(props.clickedHotel, props.activeTabIndex, () => {
-	SWIPER_SLIDER.value.on('init', swiper => {
-		console.log(swiper)
-		swiper.slideTo(swiper.slides[props.activeTabIndex], 300)
-	})
-})
+function priceCalculation(price) {
+	return Math.floor(price / 7 / 2)
+}
 
+function getHotelBenefits(hotelName) {
+	const benefitsArr = Object.values(
+		window.vip_russia_hotels[activeTabIndex.value]
+	)[0]
+	return benefitsArr.find(item => item.hotel_name === hotelName).benefits
+}
+
+watch(clickedHotel)
 onMounted(() => {
 	Object.assign(SWIPER_SLIDER.value, swiperParams)
 	SWIPER_SLIDER.value.initialize()
 })
 </script>
 <template>
-	<swiper-container ref="SWIPER_SLIDER" init="false">
+	<swiper-container ref="SWIPER_SLIDER">
 		<swiper-slide
-			v-for="slide in data"
+			v-for="(slide, slideIdx) in data"
+			:key="slideIdx"
 			:style="{
 				background: `url(${slide.img}) center/cover no-repeat`,
 			}"
@@ -82,7 +74,10 @@ onMounted(() => {
 					</div>
 					<h3>{{ slide.hotel_name }}</h3>
 					<ul class="side-pannel-content__benefits">
-						<li v-for="benefit in hotelsBenefits[activeTabIndex]?.benefits">
+						<li
+							v-for="(benefit, idx) in getHotelBenefits(slide.hotel_name)"
+							:key="idx"
+						>
 							{{ benefit }}
 						</li>
 					</ul>
