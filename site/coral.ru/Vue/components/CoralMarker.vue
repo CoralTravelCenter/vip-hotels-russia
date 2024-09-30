@@ -9,12 +9,27 @@ const props = defineProps({
 function priceCalculation(price) {
 	return Math.floor(price / 7 / 2);
 }
+
+function truncateString(str) {
+	const index = str.indexOf("(");
+	if (index !== -1) {
+		return str.substring(0, index);
+	} else {
+		return str;
+	}
+}
 </script>
 
 <template>
 	<div class="coral-marker">
 		<div class="placemark"></div>
-		<div class="name">{{ priceCalculation(props.data.price) }}&nbsp;₽</div>
+		<div class="name">
+			<span>{{ truncateString(props.data.hotel_name) }}</span
+			><br />
+			<span>
+				от {{ priceCalculation(props.data.price) }}&nbsp;₽ / ночь
+			</span>
+		</div>
 	</div>
 </template>
 

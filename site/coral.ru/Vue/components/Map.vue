@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref } from "vue";
 import {
 	YandexMap,
 	YandexMapClusterer,
@@ -8,10 +8,10 @@ import {
 	YandexMapDefaultSchemeLayer,
 	YandexMapMarker,
 	YandexMapZoomControl,
-} from 'vue-yandex-maps'
-import CoralMarker from './CoralMarker.vue'
+} from "vue-yandex-maps";
+import CoralMarker from "./CoralMarker.vue";
 
-const regionsCoordinates = window.regionsCoordinates
+const regionsCoordinates = window.regionsCoordinates;
 
 const props = defineProps({
 	activeTabIndex: {
@@ -22,17 +22,17 @@ const props = defineProps({
 		type: Array,
 		required: true,
 	},
-})
+});
 
-const clickedOnMapHotel = defineModel({ default: 0 })
+const clickedOnMapHotel = defineModel({ default: 0 });
 
 const setCenter = computed(() => {
-	const [lat, long] = regionsCoordinates[props.activeTabIndex].split(',')
-	return [long, lat]
-})
+	const [lat, long] = regionsCoordinates[props.activeTabIndex].split(",");
+	return [long, lat];
+});
 
-const clusterer = ref(null)
-const clustererGridSize = ref(90)
+const clusterer = ref(null);
+const clustererGridSize = ref(90);
 
 const setMapSettings = ref({
 	location: {
@@ -40,15 +40,15 @@ const setMapSettings = ref({
 		zoom: 7,
 	},
 	showScaleInCopyrights: true,
-})
+});
 
 function onMarkerClick(idx) {
 	setMapSettings.value.location.center = [
 		props.data[idx].long,
 		props.data[idx].lat,
-	]
-	setMapSettings.value.location.zoom = 15
-	clickedOnMapHotel.value = idx
+	];
+	setMapSettings.value.location.zoom = 17;
+	clickedOnMapHotel.value = idx;
 }
 </script>
 
@@ -80,7 +80,10 @@ function onMarkerClick(idx) {
 						coordinates: [marker.long, marker.lat],
 					}"
 				>
-					<CoralMarker @click="onMarkerClick(idx)" :data="data[idx]" />
+					<CoralMarker
+						@click="onMarkerClick(idx)"
+						:data="data[idx]"
+					/>
 				</yandex-map-marker>
 			</yandex-map-clusterer>
 		</yandex-map>

@@ -1,21 +1,21 @@
 <script setup>
-import { inject, onMounted, ref, watch } from 'vue'
+import { inject, onMounted, ref, watch } from "vue";
 
 const props = defineProps({
 	data: {
 		type: Array,
 		required: true,
 	},
-})
+});
 
-const SWIPER_SLIDER = ref(null)
-const clickedHotel = inject('clickedHotel')
-const activeTabIndex = inject('activeTabIndex')
+const SWIPER_SLIDER = ref(null);
+const clickedHotel = inject("clickedHotel");
+const activeTabIndex = inject("activeTabIndex");
 const x_Links = {
 	data_onlyhotel_lookup_depth_days: window.data_onlyhotel_lookup_depth_days,
 	data_onlyhotel_lookup_nights: window.data_onlyhotel_lookup_nights,
 	data_onlyhotel_lookup_destination: window.data_onlyhotel_lookup_destination,
-}
+};
 
 const swiperParams = {
 	init: false,
@@ -25,28 +25,28 @@ const swiperParams = {
 	pagination: true,
 	breakpoints: {
 		768: {
-			direction: 'vertical',
+			direction: "vertical",
 			pagination: false,
 		},
 	},
-}
+};
 
 function priceCalculation(price) {
-	return Math.floor(price / 7 / 2)
+	return Math.floor(price / 7 / 2);
 }
 
 function getHotelBenefits(hotelName) {
 	const benefitsArr = Object.values(
-		window.vip_russia_hotels[activeTabIndex.value]
-	)[0]
-	return benefitsArr.find(item => item.hotel_name === hotelName).benefits
+		window.vip_russia_hotels[activeTabIndex.value],
+	)[0];
+	return benefitsArr.find((item) => item.hotel_name === hotelName).benefits;
 }
 
-watch(clickedHotel)
+watch(clickedHotel);
 onMounted(() => {
-	Object.assign(SWIPER_SLIDER.value, swiperParams)
-	SWIPER_SLIDER.value.initialize()
-})
+	Object.assign(SWIPER_SLIDER.value, swiperParams);
+	SWIPER_SLIDER.value.initialize();
+});
 </script>
 <template>
 	<swiper-container ref="SWIPER_SLIDER">
@@ -75,31 +75,35 @@ onMounted(() => {
 					<h3>{{ slide.hotel_name }}</h3>
 					<ul class="side-pannel-content__benefits">
 						<li
-							v-for="(benefit, idx) in getHotelBenefits(slide.hotel_name)"
+							v-for="(benefit, idx) in getHotelBenefits(
+								slide.hotel_name,
+							)"
 							:key="idx"
 						>
 							{{ benefit }}
 						</li>
 					</ul>
 					<div data-price>
-						<span class="price">от {{ priceCalculation(slide.price) }} ₽</span
+						<span class="price"
+							>от {{ priceCalculation(slide.price) }} ₽ /
+							ночь</span
 						><br />
-						<span class="attention"
-							>* Цена указана из расчета прибывания не менее 7 ночей, за одного
-							туриста</span
-						>
+						<span class="attention">
+							* Цена указана из расчета пребывания не менее 7
+							ночей, за одного туриста
+						</span>
 					</div>
 					<div class="actions">
 						<a
 							href="#"
 							:data-onlyhotel-lookup-regions="slide.hotel_name"
-							:data_onlyhotel_lookup_depth_days="
+							:data-onlyhotel-lookup-depth-days="
 								x_Links.data_onlyhotel_lookup_depth_days
 							"
-							:data_onlyhotel_lookup_nights="
+							:data-onlyhotel-lookup-nights="
 								x_Links.data_onlyhotel_lookup_nights
 							"
-							:data_onlyhotel_lookup_destination="
+							:data-onlyhotel-lookup-destination="
 								x_Links.data_onlyhotel_lookup_destination
 							"
 							>Забронировать онлайн</a
@@ -113,7 +117,7 @@ onMounted(() => {
 </template>
 
 <style lang="scss">
-@import '../../../common/css/coral/coral-fluid-mixins';
+@import "../../../common/css/coral/coral-fluid-mixins";
 
 :root {
 	--swiper-scrollbar-right: 40%;
