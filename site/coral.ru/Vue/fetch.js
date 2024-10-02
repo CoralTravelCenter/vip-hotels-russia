@@ -32,15 +32,7 @@ export const getArrivalLocation = (activeRegion) => {
 	});
 };
 
-// #2 Получаем координаты и изображения отелей //
-export const getHotelInfo = (id) => {
-	return doRequestToServer(endpointUrl(HOTEL_INFO_API), {
-		hotelIds: [id],
-		imageSizes: [1],
-	});
-};
-
-// #3 Получаем стоимость номера //
+// #2 Получаем стоимость номера //
 export const getHotelPrice = (idToString, type, name, friendlyUrl) => {
 	return doRequestToServer(endpointUrl(HOTEL_PRICE_API), {
 		searchCriterias: {

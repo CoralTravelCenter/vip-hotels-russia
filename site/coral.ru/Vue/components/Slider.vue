@@ -1,5 +1,6 @@
 <script setup>
-import { inject, onMounted, ref, watch } from "vue";
+import { inject, watch, ref } from "vue";
+import { truncateString } from "../../../common/js/utils";
 
 const props = defineProps({
 	data: {
@@ -8,27 +9,12 @@ const props = defineProps({
 	},
 });
 
-const SWIPER_SLIDER = ref(null);
 const clickedHotel = inject("clickedHotel");
 const activeTabIndex = inject("activeTabIndex");
 const x_Links = {
 	data_onlyhotel_lookup_depth_days: window.data_onlyhotel_lookup_depth_days,
 	data_onlyhotel_lookup_nights: window.data_onlyhotel_lookup_nights,
 	data_onlyhotel_lookup_destination: window.data_onlyhotel_lookup_destination,
-};
-
-const swiperParams = {
-	init: false,
-	slidesPerView: 1,
-	grabCursor: true,
-	scrollbar: true,
-	pagination: true,
-	breakpoints: {
-		768: {
-			direction: "vertical",
-			pagination: false,
-		},
-	},
 };
 
 function priceCalculation(price) {
@@ -43,13 +29,15 @@ function getHotelBenefits(hotelName) {
 }
 
 watch(clickedHotel);
-onMounted(() => {
-	Object.assign(SWIPER_SLIDER.value, swiperParams);
-	SWIPER_SLIDER.value.initialize();
-});
 </script>
 <template>
-	<swiper-container ref="SWIPER_SLIDER">
+	<swiper-container
+		id="vip-hotels-slider"
+		:slidesPerView="1"
+		:grabCursor="true"
+		:pagination="true"
+		:navigation="true"
+	>
 		<swiper-slide
 			v-for="(slide, slideIdx) in data"
 			:key="slideIdx"
@@ -72,7 +60,7 @@ onMounted(() => {
 							src="/site/coral.ru/assets/rating-icon.svg"
 						/>
 					</div>
-					<h3>{{ slide.hotel_name }}</h3>
+					<h3>{{ truncateString(slide.hotel_name) }}</h3>
 					<ul class="side-pannel-content__benefits">
 						<li
 							v-for="(benefit, idx) in getHotelBenefits(
@@ -119,19 +107,30 @@ onMounted(() => {
 <style lang="scss">
 @import "../../../common/css/coral/coral-fluid-mixins";
 
-:root {
-	--swiper-scrollbar-right: 40%;
-	--swiper-scrollbar-sides-offset: 0px;
-	--swiper-scrollbar-bg-color: rgba(255, 255, 255, 0.29);
-	--swiper-scrollbar-drag-bg-color: #0092d0;
-}
-
-swiper-container {
+#vip-hotels-slider {
 	@include property(height, 630px);
 	border-radius: 1em;
 
 	@media (max-width: 768px) {
 		@include property(height, 800px);
+	}
+
+	&::part(bullet) {
+		width: 10px;
+		height: 10px;
+	}
+
+	&::part(bullet-active) {
+		width: 10px;
+		height: 10px;
+		background: #0092d0;
+	}
+
+	&::part(button-next) {
+		width: 40px;
+		height: 40px;
+		border-radius: 100%;
+		background: #fff;
 	}
 }
 
@@ -244,10 +243,6 @@ swiper-slide {
 
 	@media (max-width: 768px) {
 		width: 100%;
-	}
-
-	.swiper-pagination-bullet-active {
-		background: #0092d0;
 	}
 }
 </style>

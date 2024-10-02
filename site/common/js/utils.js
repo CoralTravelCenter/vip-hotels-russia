@@ -155,3 +155,12 @@ export function getJSON(key) {
 		console.error(e);
 	}
 }
+
+export function truncateString(str) {
+	const index = str.indexOf("(");
+	if (index !== -1) {
+		return str.substring(0, index);
+	} else {
+		return str;
+	}
+}

@@ -1,4 +1,5 @@
 <script setup>
+import { truncateString } from "../../../common/js/utils";
 const props = defineProps({
 	data: {
 		type: Object,
@@ -8,15 +9,6 @@ const props = defineProps({
 
 function priceCalculation(price) {
 	return Math.floor(price / 7 / 2);
-}
-
-function truncateString(str) {
-	const index = str.indexOf("(");
-	if (index !== -1) {
-		return str.substring(0, index);
-	} else {
-		return str;
-	}
 }
 </script>
 
