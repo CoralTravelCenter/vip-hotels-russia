@@ -1,34 +1,42 @@
 <script setup>
-import { inject, watch, ref } from "vue";
-import { truncateString } from "../../../common/js/utils";
+import { inject, watch } from 'vue'
+import { truncateString } from '../../../common/js/utils'
+import SliderButton from './SliderButton.vue'
 
 const props = defineProps({
 	data: {
 		type: Array,
 		required: true,
 	},
-});
+})
 
-const clickedHotel = inject("clickedHotel");
-const activeTabIndex = inject("activeTabIndex");
+const clickedHotel = inject('clickedHotel')
+const activeTabIndex = inject('activeTabIndex')
 const x_Links = {
 	data_onlyhotel_lookup_depth_days: window.data_onlyhotel_lookup_depth_days,
 	data_onlyhotel_lookup_nights: window.data_onlyhotel_lookup_nights,
 	data_onlyhotel_lookup_destination: window.data_onlyhotel_lookup_destination,
-};
+}
 
 function priceCalculation(price) {
-	return Math.floor(price / 7 / 2);
+	return Math.floor(price / 7 / 2)
 }
 
 function getHotelBenefits(hotelName) {
 	const benefitsArr = Object.values(
-		window.vip_russia_hotels[activeTabIndex.value],
-	)[0];
-	return benefitsArr.find((item) => item.hotel_name === hotelName).benefits;
+		window.vip_russia_hotels[activeTabIndex.value]
+	)[0]
+	return benefitsArr.find(item => item.hotel_name === hotelName).benefits
 }
 
-watch(clickedHotel);
+function goToClickedHotel(e) {
+	const [swiper] = e.detail
+	console.log(swiper)
+
+	// swiper.slideTo(clickedHotel.value, 500, false)
+}
+
+watch(clickedHotel, goToClickedHotel)
 </script>
 <template>
 	<swiper-container
@@ -36,7 +44,11 @@ watch(clickedHotel);
 		:slidesPerView="1"
 		:grabCursor="true"
 		:pagination="true"
-		:navigation="true"
+		:navigation="{
+			nextEl: '.slider-button-next',
+			prevEl: '.slider-button-prev',
+		}"
+		@swiperinit="goToClickedHotel"
 	>
 		<swiper-slide
 			v-for="(slide, slideIdx) in data"
@@ -63,9 +75,7 @@ watch(clickedHotel);
 					<h3>{{ truncateString(slide.hotel_name) }}</h3>
 					<ul class="side-pannel-content__benefits">
 						<li
-							v-for="(benefit, idx) in getHotelBenefits(
-								slide.hotel_name,
-							)"
+							v-for="(benefit, idx) in getHotelBenefits(slide.hotel_name)"
 							:key="idx"
 						>
 							{{ benefit }}
@@ -73,12 +83,11 @@ watch(clickedHotel);
 					</ul>
 					<div data-price>
 						<span class="price"
-							>от {{ priceCalculation(slide.price) }} ₽ /
-							ночь</span
+							>от {{ priceCalculation(slide.price) }} ₽ / ночь</span
 						><br />
 						<span class="attention">
-							* Цена указана из расчета пребывания не менее 7
-							ночей, за одного туриста
+							* Цена указана из расчета пребывания не менее 7 ночей, за одного
+							туриста
 						</span>
 					</div>
 					<div class="actions">
@@ -101,11 +110,39 @@ watch(clickedHotel);
 				</div>
 			</div>
 		</swiper-slide>
+		<SliderButton
+			class="slider-button slider-button-prev"
+			slot="container-end"
+			:prev="true"
+		>
+			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<g stroke-width="0" />
+				<g stroke-linecap="round" stroke-linejoin="round" />
+				<path
+					d="M14.29 5.707a1 1 0 0 0-1.415 0L7.988 10.6a2 2 0 0 0 0 2.828l4.89 4.89a1 1 0 0 0 1.415-1.414l-4.186-4.185a1 1 0 0 1 0-1.415l4.182-4.182a1 1 0 0 0 0-1.414"
+					fill="#000"
+				/>
+			</svg>
+		</SliderButton>
+		<SliderButton
+			class="slider-button slider-button-next"
+			slot="container-end"
+			:next="true"
+		>
+			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<g stroke-width="0" />
+				<g stroke-linecap="round" stroke-linejoin="round" />
+				<path
+					d="M9.71 18.293a1 1 0 0 0 1.415 0l4.887-4.892a2 2 0 0 0 0-2.828l-4.89-4.89a1 1 0 0 0-1.415 1.414l4.186 4.185a1 1 0 0 1 0 1.415L9.71 16.879a1 1 0 0 0 0 1.414"
+					fill="#000"
+				/>
+			</svg>
+		</SliderButton>
 	</swiper-container>
 </template>
 
-<style lang="scss">
-@import "../../../common/css/coral/coral-fluid-mixins";
+<style scoped lang="scss">
+@import '../../../common/css/coral/coral-fluid-mixins';
 
 #vip-hotels-slider {
 	@include property(height, 630px);
@@ -124,13 +161,6 @@ watch(clickedHotel);
 		width: 10px;
 		height: 10px;
 		background: #0092d0;
-	}
-
-	&::part(button-next) {
-		width: 40px;
-		height: 40px;
-		border-radius: 100%;
-		background: #fff;
 	}
 }
 
@@ -189,7 +219,7 @@ swiper-slide {
 	.side-pannel-content {
 		display: flex;
 		flex-direction: column;
-		align-self: center;
+
 		@include property(padding, 26px);
 
 		@media (max-width: 768px) {
@@ -209,15 +239,13 @@ swiper-slide {
 		}
 
 		&__benefits {
-			@include fontAndProperty(16px, margin-bottom, 32px);
+			margin-bottom: auto;
 			@include fontAndProperty(16px, padding-left, 24px);
 			margin-top: 0;
 			line-height: 1.5;
 		}
 
 		[data-price] {
-			@include property(margin-bottom, 48px);
-
 			.price {
 				@include font(32px);
 			}
@@ -232,7 +260,7 @@ swiper-slide {
 			display: flex;
 			flex-direction: column;
 			@include property(gap, 24px);
-			margin-top: auto;
+			margin-top: 1em;
 
 			a.outline {
 				border-color: #fff;
@@ -243,6 +271,32 @@ swiper-slide {
 
 	@media (max-width: 768px) {
 		width: 100%;
+	}
+}
+
+.slider-button {
+	@media (max-width: 768px) {
+		display: none;
+	}
+
+	cursor: pointer;
+
+	svg {
+		width: 20px;
+		height: 20px;
+	}
+
+	svg path {
+		fill: #000;
+		transition: all 500ms ease;
+	}
+
+	&:hover {
+		border-color: #66d1ff;
+
+		svg path {
+			fill: #66d1ff;
+		}
 	}
 }
 </style>

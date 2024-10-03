@@ -1,82 +1,69 @@
 <script setup>
-import { onMounted, provide, ref, watch } from "vue";
-import Map from "./components/Map.vue";
-import Slider from "./components/Slider.vue";
-import Tabs from "./components/Tabs.vue";
-import { getArrivalLocation, getHotelPrice } from "./fetch.js";
+import { onMounted, provide, ref, watch } from 'vue'
+import Map from './components/Map.vue'
+import Slider from './components/Slider.vue'
+import Tabs from './components/Tabs.vue'
+import { getArrivalLocation, getHotelPrice } from './fetch.js'
 
-const activeTabIndex = ref(0);
-const clickedHotel = ref(0);
-provide("clickedHotel", clickedHotel);
-provide("activeTabIndex", activeTabIndex);
+const activeTabIndex = ref(0)
+const clickedHotel = ref(0)
+provide('clickedHotel', clickedHotel)
+provide('activeTabIndex', activeTabIndex)
 
-const regionsTabs = window.vip_russia_hotels.map((tab) => Object.keys(tab)[0]);
-const fetchedData = ref([]);
-const isLoading = ref({ slider: true, map: true });
+const regionsTabs = window.vip_russia_hotels.map(tab => Object.keys(tab)[0])
+const fetchedData = ref([])
+const isLoading = ref({ slider: true, map: true })
 
-async function fetchHotelData(response) {
-	const { id, type, name, friendlyUrl } = response[0];
-	const idToString = id.split("-")[0].toString();
-	const priceResponses = await Promise.all([
-		getHotelPrice(idToString, type, name, friendlyUrl),
-	]);
+async function fetchServerData() {
+	const locationResponses = await Promise.all(
+		getArrivalLocation(activeTabIndex.value)
+	)
+	const locationsData = locationResponses.map(response => {
+		if (response.result.locations.length > 0) {
+			const { id, type, name, friendlyUrl } = response.result.locations[0]
+			const idToString = id.split('-')[0].toString()
+			return {
+				id: idToString,
+				type: type,
+				name: name,
+				friendlyUrl: friendlyUrl,
+			}
+		}
+	})
 
-	if (priceResponses.length > 0) {
-		priceResponses.forEach((response) => {
+	const hotelPriceResponses = await getHotelPrice(locationsData)
+	console.log(hotelPriceResponses.result)
+	if (hotelPriceResponses.length > 0) {
+		priceResponses.forEach(response => {
 			if (response.result.products) {
-				const { hotel, offers } = response.result.products[0];
+				const { hotel, offers } = response.result.products[0]
 				fetchedData.value.push({
 					price: offers[0].price.amount,
 					hotel_name: hotel.name,
 					location_name: hotel.locationSummary
-						.split(",")
+						.split(',')
 						.splice(1, 2)
-						.join(","),
+						.join(','),
 					img: hotel.images[0].sizes[0].url,
 					marker_img: hotel.images[0].sizes[0].url,
-					rating: [1, 2, 3, 4, 5],
+					rating: Array.from({ length: 5 }),
 					lat: hotel.coordinates.latitude,
 					long: hotel.coordinates.longitude,
-				});
+				})
 				isLoading.value = {
 					...isLoading.value,
 					slider: false,
 					map: false,
-				};
+				}
 			}
-		});
+		})
 	}
 }
 
-async function fetchServerData() {
-	fetchedData.value = [];
-	fetchedData.value.length === 0
-		? (isLoading.value = {
-				...isLoading.value,
-				slider: true,
-				map: true,
-			})
-		: (isLoading.value = {
-				...isLoading.value,
-				slider: false,
-				map: false,
-			});
-
-	const responses = await Promise.all(
-		getArrivalLocation(activeTabIndex.value),
-	);
-
-	responses.forEach((response) => {
-		if (response.result.locations.length > 0) {
-			fetchHotelData(response.result.locations);
-		}
-	});
-}
-
 onMounted(() => {
-	fetchServerData();
-});
-watch(activeTabIndex, fetchServerData);
+	fetchServerData()
+})
+watch(activeTabIndex, fetchServerData)
 </script>
 
 <template>

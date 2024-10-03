@@ -1,39 +1,38 @@
 import {
 	ARRIVAL_LOCATIONS_API,
-	HOTEL_INFO_API,
 	HOTEL_PRICE_API,
 	doRequestToServer,
-} from "./api.js";
-import { addDays, formatDate } from "./date.js";
+} from './api.js'
+import { addDays, formatDate } from './date.js'
 
-const today = new Date();
+const today = new Date()
 const beginSearchDate = formatDate(
-	addDays(today, data_onlyhotel_lookup_depth_days),
-);
+	addDays(today, data_onlyhotel_lookup_depth_days)
+)
 const searchDepthDate = formatDate(
-	addDays(beginSearchDate, data_onlyhotel_lookup_nights),
-);
+	addDays(beginSearchDate, data_onlyhotel_lookup_nights)
+)
 
 function endpointUrl(endpoint) {
 	const host =
-		location.hostname === "localhost"
-			? "http://localhost:8010/proxy"
-			: "//" + location.hostname.replace(/www|new/, "b2capi");
-	return host + endpoint;
+		location.hostname === 'localhost'
+			? 'http://localhost:8010/proxy'
+			: '//' + location.hostname.replace(/www|new/, 'b2capi')
+	return host + endpoint
 }
 
 // #1 Получаем ID отелей //
-export const getArrivalLocation = (activeRegion) => {
-	const hotels = Object.values(window.vip_russia_hotels[activeRegion])[0];
-	return hotels.map((hotel) => {
+export const getArrivalLocation = activeRegion => {
+	const hotels = Object.values(window.vip_russia_hotels[activeRegion])[0]
+	return hotels.map(hotel => {
 		return doRequestToServer(endpointUrl(ARRIVAL_LOCATIONS_API), {
 			text: hotel.hotel_name,
-		});
-	});
-};
+		})
+	})
+}
 
 // #2 Получаем стоимость номера //
-export const getHotelPrice = (idToString, type, name, friendlyUrl) => {
+export const getHotelPrice = arrivalLocationsArr => {
 	return doRequestToServer(endpointUrl(HOTEL_PRICE_API), {
 		searchCriterias: {
 			reservationType: 1,
@@ -58,19 +57,12 @@ export const getHotelPrice = (idToString, type, name, friendlyUrl) => {
 					],
 				},
 			],
-			arrivalLocations: [
-				{
-					id: idToString,
-					type: type,
-					name: name,
-					friendlyUrl: friendlyUrl,
-				},
-			],
+			arrivalLocations: arrivalLocationsArr,
 			paging: {
 				pageNumber: 1,
 				pageSize: 1,
 				sortType: 0,
 			},
 		},
-	});
-};
+	})
+}

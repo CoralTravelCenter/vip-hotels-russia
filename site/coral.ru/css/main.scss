@@ -1,5 +1,5 @@
-@import "../../common/css/coral/coral-fluid-mixins";
-@import "../../common/css/global-variables";
+@import '../../common/css/coral/coral-fluid-mixins';
+@import '../../common/css/global-variables';
 
 .row-outer-container:has(section.hero) {
 	background: #f1f7fb !important;
@@ -10,7 +10,7 @@ section.kv > article .contenu {
 		position: relative;
 		width: 100%;
 		aspect-ratio: 137/52;
-		@include property(border-radius, 32px);
+		border-radius: 1em;
 		overflow: hidden;
 
 		@media (max-width: 768px) {
