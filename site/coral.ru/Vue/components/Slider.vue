@@ -1,6 +1,6 @@
 <script setup>
-import { inject, watch } from 'vue'
-import { truncateString } from '../../../common/js/utils'
+import {inject, watch} from 'vue'
+import {truncateString} from '../../../common/js/utils'
 import SliderButton from './SliderButton.vue'
 
 const props = defineProps({
@@ -25,18 +25,18 @@ function priceCalculation(price) {
 function getHotelBenefits(hotelName) {
 	const benefitsArr = Object.values(
 		window.vip_russia_hotels[activeTabIndex.value]
-	)[0]
-	return benefitsArr.find(item => item.hotel_name === hotelName).benefits
+	)
+	return benefitsArr[0].find(item => item.hotel_name === hotelName).benefits
 }
 
-function goToClickedHotel(e) {
-	const [swiper] = e.detail
-	console.log(swiper)
+//function goToClickedHotel(e) {
+//	const [swiper] = e.detail
+//	console.log(swiper)
+//
+//	// swiper.slideTo(clickedHotel.value, 500, false)
+//}
 
-	// swiper.slideTo(clickedHotel.value, 500, false)
-}
-
-watch(clickedHotel, goToClickedHotel)
+watch(activeTabIndex, getHotelBenefits)
 </script>
 <template>
 	<swiper-container
@@ -44,11 +44,11 @@ watch(clickedHotel, goToClickedHotel)
 		:slidesPerView="1"
 		:grabCursor="true"
 		:pagination="true"
+		:loop="true"
 		:navigation="{
 			nextEl: '.slider-button-next',
 			prevEl: '.slider-button-prev',
 		}"
-		@swiperinit="goToClickedHotel"
 	>
 		<swiper-slide
 			v-for="(slide, slideIdx) in data"
@@ -60,7 +60,7 @@ watch(clickedHotel, goToClickedHotel)
 			<div class="side-pannel">
 				<span class="side-pannel__location">
 					<div class="icon">
-						<img src="/site/coral.ru/assets/location-icon.svg" />
+						<img src="/site/coral.ru/assets/location-icon.svg"/>
 					</div>
 					{{ slide.location_name }}
 				</span>
@@ -83,8 +83,8 @@ watch(clickedHotel, goToClickedHotel)
 					</ul>
 					<div data-price>
 						<span class="price"
-							>от {{ priceCalculation(slide.price) }} ₽ / ночь</span
-						><br />
+						>от {{ priceCalculation(slide.price) }} ₽ / ночь</span
+						><br/>
 						<span class="attention">
 							* Цена указана из расчета пребывания не менее 7 ночей, за одного
 							туриста
@@ -103,7 +103,7 @@ watch(clickedHotel, goToClickedHotel)
 							:data-onlyhotel-lookup-destination="
 								x_Links.data_onlyhotel_lookup_destination
 							"
-							>Забронировать онлайн</a
+						>Забронировать онлайн</a
 						>
 						<!-- <a href="#" class="outline">Подробнее об отеле</a> -->
 					</div>
@@ -115,13 +115,8 @@ watch(clickedHotel, goToClickedHotel)
 			slot="container-end"
 			:prev="true"
 		>
-			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-				<g stroke-width="0" />
-				<g stroke-linecap="round" stroke-linejoin="round" />
-				<path
-					d="M14.29 5.707a1 1 0 0 0-1.415 0L7.988 10.6a2 2 0 0 0 0 2.828l4.89 4.89a1 1 0 0 0 1.415-1.414l-4.186-4.185a1 1 0 0 1 0-1.415l4.182-4.182a1 1 0 0 0 0-1.414"
-					fill="#000"
-				/>
+			<svg xmlns="http://www.w3.org/2000/svg" width="5" height="9" viewBox="0 0 5 9" fill="none">
+				<path d="M4.33337 1.16382L1.00004 4.49715L4.33337 7.83048" stroke="#535353" stroke-linejoin="round"/>
 			</svg>
 		</SliderButton>
 		<SliderButton
@@ -129,13 +124,8 @@ watch(clickedHotel, goToClickedHotel)
 			slot="container-end"
 			:next="true"
 		>
-			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-				<g stroke-width="0" />
-				<g stroke-linecap="round" stroke-linejoin="round" />
-				<path
-					d="M9.71 18.293a1 1 0 0 0 1.415 0l4.887-4.892a2 2 0 0 0 0-2.828l-4.89-4.89a1 1 0 0 0-1.415 1.414l4.186 4.185a1 1 0 0 1 0 1.415L9.71 16.879a1 1 0 0 0 0 1.414"
-					fill="#000"
-				/>
+			<svg xmlns="http://www.w3.org/2000/svg" width="5" height="9" viewBox="0 0 5 9" fill="none">
+				<path d="M1 1.16382L4.33333 4.49715L1 7.83049" stroke="#535353" stroke-linejoin="round"/>
 			</svg>
 		</SliderButton>
 	</swiper-container>
@@ -177,9 +167,9 @@ swiper-slide {
 	display: grid;
 	grid-template-rows: max-content auto;
 	background: linear-gradient(
-		180deg,
-		rgba(31, 31, 31, 0.44) 0.03%,
-		rgba(0, 0, 0, 0.4) 105.62%
+			180deg,
+			rgba(31, 31, 31, 0.44) 0.03%,
+			rgba(0, 0, 0, 0.4) 105.62%
 	);
 	backdrop-filter: blur(15px);
 	border-top-right-radius: 1em;
@@ -281,13 +271,7 @@ swiper-slide {
 
 	cursor: pointer;
 
-	svg {
-		width: 20px;
-		height: 20px;
-	}
-
 	svg path {
-		fill: #000;
 		transition: all 500ms ease;
 	}
 
@@ -295,7 +279,7 @@ swiper-slide {
 		border-color: #66d1ff;
 
 		svg path {
-			fill: #66d1ff;
+			stroke: #66d1ff;
 		}
 	}
 }

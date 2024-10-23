@@ -3,7 +3,7 @@ import {
 	HOTEL_PRICE_API,
 	doRequestToServer,
 } from './api.js'
-import { addDays, formatDate } from './date.js'
+import {addDays, formatDate} from './date.js'
 
 const today = new Date()
 const beginSearchDate = formatDate(
@@ -60,7 +60,7 @@ export const getHotelPrice = arrivalLocationsArr => {
 			arrivalLocations: arrivalLocationsArr,
 			paging: {
 				pageNumber: 1,
-				pageSize: 1,
+				pageSize: arrivalLocationsArr.length,
 				sortType: 0,
 			},
 		},
