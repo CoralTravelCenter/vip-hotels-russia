@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from "vue";
+import {inject, ref, watch} from "vue";
 import {
 	YandexMap,
 	YandexMapClusterer,
@@ -12,31 +12,27 @@ import {
 import CoralMarker from "./CoralMarker.vue";
 
 const regionsCoordinates = window.regionsCoordinates;
+const activeTabIndex = inject('activeTabIndex')
 
 const props = defineProps({
-	activeTabIndex: {
-		type: Number,
-		required: true,
-	},
 	data: {
 		type: Array,
 		required: true,
 	},
 });
 
-const clickedOnMapHotel = defineModel({ default: 0 });
-
-const setCenter = computed(() => {
-	const [lat, long] = regionsCoordinates[props.activeTabIndex].split(",");
-	return [long, lat];
-});
-
+const clickedOnMapHotel = defineModel({default: 0});
 const clusterer = ref(null);
 const clustererGridSize = ref(90);
 
+const setCenter = () => {
+	const [lat, long] = regionsCoordinates[activeTabIndex.value].split(",");
+	return [long, lat];
+}
+
 const setMapSettings = ref({
 	location: {
-		center: setCenter.value,
+		center: setCenter(),
 		zoom: 7,
 	},
 	showScaleInCopyrights: true,
@@ -50,16 +46,18 @@ function onMarkerClick(idx) {
 	setMapSettings.value.location.zoom = 17;
 	clickedOnMapHotel.value = idx;
 }
+
+watch(activeTabIndex.value, setCenter)
 </script>
 
 <template>
 	<div class="map-wrapper">
 		<yandex-map height="32.5em" :settings="setMapSettings" width="100%">
-			<yandex-map-default-scheme-layer />
-			<yandex-map-default-features-layer />
+			<yandex-map-default-scheme-layer/>
+			<yandex-map-default-features-layer/>
 
 			<yandex-map-controls :settings="{ position: 'right' }">
-				<yandex-map-zoom-control />
+				<yandex-map-zoom-control/>
 			</yandex-map-controls>
 
 			<yandex-map-clusterer

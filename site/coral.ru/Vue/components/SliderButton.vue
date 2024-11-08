@@ -12,8 +12,8 @@ const props = defineProps({
 </script>
 
 <template>
-	<button :style="next ? 'right: 16px' : 'left: 16px'">
-		<slot />
+	<button :style="next ? 'right: -56px' : 'left: -56px'">
+		<slot/>
 	</button>
 </template>
 

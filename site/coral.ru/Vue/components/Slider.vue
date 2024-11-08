@@ -3,7 +3,7 @@ import {inject, watch} from 'vue'
 import {truncateString} from '../../../common/js/utils'
 import SliderButton from './SliderButton.vue'
 
-const props = defineProps({
+defineProps({
 	data: {
 		type: Array,
 		required: true,
@@ -29,16 +29,34 @@ function getHotelBenefits(hotelName) {
 	return benefitsArr[0].find(item => item.hotel_name === hotelName).benefits
 }
 
-//function goToClickedHotel(e) {
-//	const [swiper] = e.detail
-//	console.log(swiper)
-//
-//	// swiper.slideTo(clickedHotel.value, 500, false)
-//}
+function goToClickedHotel(e) {
+	const [swiper] = e.detail
+	console.log(swiper)
 
-watch(activeTabIndex, getHotelBenefits)
+//	swiper.slideTo(clickedHotel.value, 500, false)
+}
+
+watch(activeTabIndex, goToClickedHotel)
 </script>
 <template>
+	<SliderButton
+		v-if="data.length > 1"
+		class="slider-button slider-button-prev"
+		:prev="true"
+	>
+		<svg xmlns="http://www.w3.org/2000/svg" width="5" height="9" viewBox="0 0 5 9" fill="none">
+			<path d="M4.33337 1.16382L1.00004 4.49715L4.33337 7.83048" stroke="#535353" stroke-linejoin="round"/>
+		</svg>
+	</SliderButton>
+	<SliderButton
+		v-if="data.length > 1"
+		class="slider-button slider-button-next"
+		:next="true"
+	>
+		<svg xmlns="http://www.w3.org/2000/svg" width="5" height="9" viewBox="0 0 5 9" fill="none">
+			<path d="M1 1.16382L4.33333 4.49715L1 7.83049" stroke="#535353" stroke-linejoin="round"/>
+		</svg>
+	</SliderButton>
 	<swiper-container
 		id="vip-hotels-slider"
 		:slidesPerView="1"
@@ -110,24 +128,7 @@ watch(activeTabIndex, getHotelBenefits)
 				</div>
 			</div>
 		</swiper-slide>
-		<SliderButton
-			class="slider-button slider-button-prev"
-			slot="container-end"
-			:prev="true"
-		>
-			<svg xmlns="http://www.w3.org/2000/svg" width="5" height="9" viewBox="0 0 5 9" fill="none">
-				<path d="M4.33337 1.16382L1.00004 4.49715L4.33337 7.83048" stroke="#535353" stroke-linejoin="round"/>
-			</svg>
-		</SliderButton>
-		<SliderButton
-			class="slider-button slider-button-next"
-			slot="container-end"
-			:next="true"
-		>
-			<svg xmlns="http://www.w3.org/2000/svg" width="5" height="9" viewBox="0 0 5 9" fill="none">
-				<path d="M1 1.16382L4.33333 4.49715L1 7.83049" stroke="#535353" stroke-linejoin="round"/>
-			</svg>
-		</SliderButton>
+
 	</swiper-container>
 </template>
 
@@ -203,6 +204,7 @@ swiper-slide {
 			@include font(16px);
 			margin-left: 0;
 			margin-right: auto;
+			margin-bottom: 1em;
 		}
 	}
 
