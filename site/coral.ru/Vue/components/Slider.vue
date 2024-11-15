@@ -1,16 +1,16 @@
 <script setup>
-import {inject, watch} from 'vue'
+import {inject} from 'vue'
 import {truncateString} from '../../../common/js/utils'
 import SliderButton from './SliderButton.vue'
 
-defineProps({
+const props = defineProps({
 	data: {
 		type: Array,
 		required: true,
 	},
 })
 
-const clickedHotel = inject('clickedHotel')
+const sliderInstance = inject('sliderInstance')
 const activeTabIndex = inject('activeTabIndex')
 const x_Links = {
 	data_onlyhotel_lookup_depth_days: window.data_onlyhotel_lookup_depth_days,
@@ -23,20 +23,18 @@ function priceCalculation(price) {
 }
 
 function getHotelBenefits(hotelName) {
+	console.log(hotelName)
 	const benefitsArr = Object.values(
 		window.vip_russia_hotels[activeTabIndex.value]
 	)
+	console.log(benefitsArr[0].find(item => item.hotel_name === hotelName).benefits)
 	return benefitsArr[0].find(item => item.hotel_name === hotelName).benefits
 }
 
-function goToClickedHotel(e) {
-	const [swiper] = e.detail
-	console.log(swiper)
-
-//	swiper.slideTo(clickedHotel.value, 500, false)
+function setSwiperInstance(e) {
+	sliderInstance.value = e.detail[0]
 }
 
-watch(activeTabIndex, goToClickedHotel)
 </script>
 <template>
 	<SliderButton
@@ -67,6 +65,7 @@ watch(activeTabIndex, goToClickedHotel)
 			nextEl: '.slider-button-next',
 			prevEl: '.slider-button-prev',
 		}"
+		@swiperinit="setSwiperInstance"
 	>
 		<swiper-slide
 			v-for="(slide, slideIdx) in data"
@@ -128,7 +127,6 @@ watch(activeTabIndex, goToClickedHotel)
 				</div>
 			</div>
 		</swiper-slide>
-
 	</swiper-container>
 </template>
 
@@ -228,6 +226,10 @@ swiper-slide {
 
 		h3 {
 			@include fontAndProperty(32px, margin-bottom, 24px);
+
+			@media (max-width: 768px) {
+				@include fontAndProperty(24px, margin-bottom, 24px);
+			}
 		}
 
 		&__benefits {

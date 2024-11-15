@@ -1,6 +1,6 @@
 export function getItem(key) {
 	try {
-		return window.localStorage.getItem(key)
+		return window.sessionStorage.getItem(key)
 	} catch (e) {
 		console.log(e)
 	}
@@ -8,7 +8,7 @@ export function getItem(key) {
 
 export function setItem(key, value) {
 	try {
-		return window.localStorage.setItem(key, value)
+		return window.sessionStorage.setItem(key, value)
 	} catch (e) {
 		console.log(e)
 	}

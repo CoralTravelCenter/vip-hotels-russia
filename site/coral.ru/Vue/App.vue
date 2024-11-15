@@ -5,20 +5,18 @@ import Slider from './components/Slider.vue'
 import Tabs from './components/Tabs.vue'
 import {getArrivalLocation, getHotelPrice} from './fetch.js'
 import {getItem, setJSON, getJSON} from "../js/utils";
-import Stub from "./components/Stub.vue";
+
 
 const activeTabIndex = ref(0)
-const clickedHotel = ref(0)
-provide('clickedHotel', clickedHotel)
+const sliderInstance = ref({})
 provide('activeTabIndex', activeTabIndex)
-
-
+provide('sliderInstance', sliderInstance)
 const regionsTabs = window.vip_russia_hotels.map(tab => Object.keys(tab)[0])
 const fetchedData = ref([])
 const isLoading = ref({slider: true, map: true})
 
 async function fetchServerData() {
-	fetchedData.value.splice(0, fetchedData.value.length);
+	fetchedData.value = [];
 	fetchedData.value.length === 0 && (isLoading.value = {...isLoading.value, slider: true, map: true})
 
 	const HAS_lOCATIONS = getItem(`_VIP_HOTELS_LOCATION_DATA_${activeTabIndex.value}`) !== null;
@@ -99,7 +97,6 @@ watch(activeTabIndex, fetchServerData)
 				v-else
 				:activeTabIndex="activeTabIndex"
 				:data="fetchedData"
-				:clickedHotel="clickedHotel"
 			/>
 		</div>
 		<Skeletor v-if="isLoading.map" width="100%" height="32.5em" as="div"/>
@@ -107,7 +104,6 @@ watch(activeTabIndex, fetchServerData)
 			v-else
 			:activeTabIndex="activeTabIndex"
 			:data="fetchedData"
-			v-model="clickedHotel"
 		/>
 	</div>
 </template>

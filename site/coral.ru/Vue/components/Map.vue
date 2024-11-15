@@ -13,7 +13,7 @@ import CoralMarker from "./CoralMarker.vue";
 
 const regionsCoordinates = window.regionsCoordinates;
 const activeTabIndex = inject('activeTabIndex')
-
+const sliderInstance = inject('sliderInstance')
 const props = defineProps({
 	data: {
 		type: Array,
@@ -21,7 +21,6 @@ const props = defineProps({
 	},
 });
 
-const clickedOnMapHotel = defineModel({default: 0});
 const clusterer = ref(null);
 const clustererGridSize = ref(90);
 
@@ -44,7 +43,7 @@ function onMarkerClick(idx) {
 		props.data[idx].lat,
 	];
 	setMapSettings.value.location.zoom = 17;
-	clickedOnMapHotel.value = idx;
+	sliderInstance.value.slideTo([idx])
 }
 
 watch(activeTabIndex.value, setCenter)
@@ -75,7 +74,7 @@ watch(activeTabIndex.value, setCenter)
 					:key="idx"
 					position="top-center left-center"
 					:settings="{
-						coordinates: [marker.long, marker.lat],
+						coordinates: [marker.long, marker.lat]
 					}"
 				>
 					<CoralMarker
